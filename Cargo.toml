@@ -1,0 +1,13 @@
+[package]
+name = "topia"
+version = "0.1.0"
+authors = ["Cole Reynolds <cpjreynolds@gmail.com>"]
+description = "a simple tree library"
+documentation = "https://docs.rs/topia"
+repository = "https://github.com/cpjreynolds/topia"
+homepage = "https://github.com/cpjreynolds/topia"
+readme = "README.md"
+license = "MIT"
+keywords = ["tree"]
+
+[dependencies]
