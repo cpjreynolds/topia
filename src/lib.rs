@@ -1,6 +1,8 @@
 use std::ops::{Deref, DerefMut};
 use std::collections::VecDeque;
 use std::collections::vec_deque;
+use std::marker;
+use std::mem;
 
 #[derive(Debug, Clone, Hash)]
 pub struct Node<T> {
@@ -20,16 +22,16 @@ impl<T> Node<T> {
         self.children.len()
     }
 
-    pub fn push_back(&mut self, value: T) {
-        self.children.push_back(Node::new(value));
+    pub fn push_back(&mut self, value: Node<T>) {
+        self.children.push_back(value);
     }
 
-    pub fn push_front(&mut self, value: T) {
-        self.children.push_front(Node::new(value));
+    pub fn push_front(&mut self, value: Node<T>) {
+        self.children.push_front(value);
     }
 
-    pub fn insert(&mut self, index: usize, value: T) {
-        self.children.insert(index, Node::new(value));
+    pub fn insert(&mut self, index: usize, value: Node<T>) {
+        self.children.insert(index, value);
     }
 
     pub fn pop_front(&mut self) -> Option<Node<T>> {
@@ -68,12 +70,32 @@ impl<T> Node<T> {
         self.children.back_mut()
     }
 
-    pub fn iter(&self) -> vec_deque::Iter<Node<T>> {
+    pub fn children(&self) -> vec_deque::Iter<Node<T>> {
         self.children.iter()
     }
 
-    pub fn iter_mut(&mut self) -> vec_deque::IterMut<Node<T>> {
+    pub fn children_mut(&mut self) -> vec_deque::IterMut<Node<T>> {
         self.children.iter_mut()
+    }
+
+    /// Pre-order traversal with the given function.
+    pub fn traverse<F>(&self, f: F)
+        where F: Fn(&Node<T>)
+    {
+        f(self);
+        for child in self.children() {
+            child.traverse(&f)
+        }
+    }
+
+    /// Post-order traversal with the given function.
+    pub fn traverse_mut<F>(&mut self, mut f: F)
+        where F: FnMut(&mut Node<T>)
+    {
+        f(self);
+        for child in self.children_mut() {
+            child.traverse_mut(&mut f)
+        }
     }
 }
 
@@ -88,23 +110,5 @@ impl<T> Deref for Node<T> {
 impl<T> DerefMut for Node<T> {
     fn deref_mut(&mut self) -> &mut T {
         &mut self.value
-    }
-}
-
-impl<'a, T> IntoIterator for &'a Node<T> {
-    type Item = &'a Node<T>;
-    type IntoIter = vec_deque::Iter<'a, Node<T>>;
-
-    fn into_iter(self) -> vec_deque::Iter<'a, Node<T>> {
-        self.children.iter()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a mut Node<T> {
-    type Item = &'a mut Node<T>;
-    type IntoIter = vec_deque::IterMut<'a, Node<T>>;
-
-    fn into_iter(self) -> vec_deque::IterMut<'a, Node<T>> {
-        self.children.iter_mut()
     }
 }
