@@ -1,8 +1,6 @@
 use std::ops::{Deref, DerefMut};
 use std::collections::VecDeque;
 use std::collections::vec_deque;
-use std::marker;
-use std::mem;
 
 #[derive(Debug, Clone, Hash)]
 pub struct Node<T> {
